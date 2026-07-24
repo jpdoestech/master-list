@@ -26,6 +26,11 @@
 
 * { box-sizing: border-box; }
 
+/* The `hidden` attribute must always win over any class that sets `display`
+   (e.g. .modal, .comment-form use display:flex for layout when visible).
+   Without this, toggling `.hidden = true` in JS has no visual effect. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font-family: var(--font-body);
