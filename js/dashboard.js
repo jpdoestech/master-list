@@ -16,8 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   wireGlobalControls();
 
   try {
-    await loadOrgData();
-    await loadEmployees();
+    const data = await API.call('bootstrap', {});
+    BRANCHES = data.branches;
+    CLIENTS = data.clients;
+    EMPLOYEES = data.employees;
+    renderBranchTree();
+    renderEmployeeTable();
   } catch (err) {
     alert(err.message);
   }
@@ -286,7 +290,9 @@ async function handleOrgSubmit(e) {
   // safer than requiring an exact 'branch' match, since branch is the primary action.
   const kind = document.getElementById('org-modal').dataset.kind === 'client' ? 'client' : 'branch';
   const errEl = document.getElementById('org-form-error');
+  const submitBtn = document.getElementById('org-form').querySelector('button[type="submit"]');
   errEl.hidden = true;
+  submitBtn.disabled = true;
 
   try {
     if (kind === 'client') {
@@ -305,6 +311,8 @@ async function handleOrgSubmit(e) {
   } catch (err) {
     errEl.textContent = err.message;
     errEl.hidden = false;
+  } finally {
+    submitBtn.disabled = false;
   }
 }
 
