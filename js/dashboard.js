@@ -100,8 +100,18 @@ function renderBranchTree() {
   BRANCHES.forEach(branch => {
     const branchRow = document.createElement('div');
     branchRow.className = 'tree-item tree-branch';
-    branchRow.innerHTML = `<span class="tree-dot" style="--dot:${branchColor(branch.BranchID)}"></span> ${escapeHtml(branch.BranchName)}`;
-    branchRow.addEventListener('click', () => selectScope(branch.BranchID, '', branchRow));
+    branchRow.innerHTML = `
+      <span class="tree-branch-label"><span class="tree-dot" style="--dot:${branchColor(branch.BranchID)}"></span> ${escapeHtml(branch.BranchName)}</span>
+      ${Can.manageBranchesClients(CURRENT_USER.role) ? `<button type="button" class="tree-add-client" data-add-client="${branch.BranchID}" title="Add client under this branch">+ client</button>` : ''}
+    `;
+    branchRow.querySelector('.tree-branch-label').addEventListener('click', () => selectScope(branch.BranchID, '', branchRow));
+    const addClientBtn = branchRow.querySelector('[data-add-client]');
+    if (addClientBtn) {
+      addClientBtn.addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        openOrgModal('client', branch.BranchID);
+      });
+    }
     tree.appendChild(branchRow);
 
     CLIENTS.filter(c => String(c.BranchID) === String(branch.BranchID)).forEach(client => {
@@ -254,35 +264,41 @@ async function handleCommentSubmit(e) {
 
 // ---- Org modal (add branch / client) --------------------------------------------
 
-function openOrgModal(kind) {
+function openOrgModal(kind, presetBranchId) {
   document.getElementById('org-modal').hidden = false;
   document.getElementById('org-modal').dataset.kind = kind;
-  document.getElementById('org-modal-title').textContent = kind === 'branch' ? 'Add branch' : 'Add client';
-  document.getElementById('org-branch-field').hidden = kind !== 'branch';
+  document.getElementById('org-modal-title').textContent = kind === 'client' ? 'Add client' : 'Add branch';
+  document.getElementById('org-branch-field').hidden = kind === 'client';
   document.getElementById('org-client-fields').hidden = kind !== 'client';
+  document.getElementById('org-branch-name').value = '';
+  document.getElementById('org-client-name').value = '';
 
   if (kind === 'client') {
     const sel = document.getElementById('org-client-branch');
     sel.innerHTML = BRANCHES.map(b => `<option value="${b.BranchID}">${escapeHtml(b.BranchName)}</option>`).join('');
+    if (presetBranchId) sel.value = presetBranchId;
   }
 }
 
 async function handleOrgSubmit(e) {
   e.preventDefault();
-  const kind = document.getElementById('org-modal').dataset.kind;
+  // Default to branch mode unless the modal was explicitly opened as 'client' —
+  // safer than requiring an exact 'branch' match, since branch is the primary action.
+  const kind = document.getElementById('org-modal').dataset.kind === 'client' ? 'client' : 'branch';
   const errEl = document.getElementById('org-form-error');
   errEl.hidden = true;
 
   try {
-    if (kind === 'branch') {
-      const name = document.getElementById('org-branch-name').value.trim();
-      if (!name) throw new Error('Branch name is required.');
-      await API.call('createBranch', { branchName: name });
-    } else {
+    if (kind === 'client') {
       const name = document.getElementById('org-client-name').value.trim();
       const branchId = document.getElementById('org-client-branch').value;
       if (!name) throw new Error('Client name is required.');
+      if (!branchId) throw new Error('Please choose which branch this client belongs to.');
       await API.call('createClient', { clientName: name, branchId });
+    } else {
+      const name = document.getElementById('org-branch-name').value.trim();
+      if (!name) throw new Error('Branch name is required.');
+      await API.call('createBranch', { branchName: name });
     }
     await loadOrgData();
     closeModal('org-modal');
