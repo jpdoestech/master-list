@@ -53,6 +53,7 @@
       <span id="bulk-count">0 selected</span>
       <div class="bulk-bar-actions">
         <button id="bulk-export-btn" class="btn btn-ghost btn-sm">Export CSV</button>
+        <button id="bulk-reactivate-btn" class="btn btn-ghost btn-sm" hidden>Reactivate</button>
         <button id="bulk-delete-btn" class="btn btn-danger btn-sm" hidden>Mark inactive</button>
         <button id="bulk-clear-btn" class="btn btn-ghost btn-sm">Clear</button>
       </div>
@@ -78,7 +79,7 @@
 
     <div class="table-wrap">
       <div class="table-scroll">
-        <table class="data-table" id="employee-table">
+        <table class="data-table density-compact" id="employee-table">
           <thead>
             <tr>
               <th class="th-checkbox"><input type="checkbox" id="select-all-checkbox"></th>

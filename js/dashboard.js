@@ -48,9 +48,6 @@ function renderUserChrome() {
   if (Can.manageBranchesClients(CURRENT_USER.role)) {
     document.getElementById('add-branch-btn').hidden = false;
   }
-  if (Can.deleteEmployees(CURRENT_USER.role)) {
-    document.getElementById('bulk-delete-btn').hidden = false;
-  }
   document.getElementById('scope-label').textContent =
     CURRENT_USER.assignedBranches === 'ALL' ? 'Viewing all branches' : 'Viewing your assigned branches/clients';
 }
@@ -137,6 +134,7 @@ function wireGlobalControls() {
     exportEmployeesCsv(rows, 'employees-selected.csv');
   });
   document.getElementById('bulk-delete-btn').addEventListener('click', handleBulkDelete);
+  document.getElementById('bulk-reactivate-btn').addEventListener('click', handleBulkReactivate);
   document.getElementById('export-all-btn').addEventListener('click', () => {
     const rows = EMPLOYEES.filter(e => matchesFilters(e));
     exportEmployeesCsv(rows, 'employees.csv');
@@ -322,7 +320,9 @@ function renderEmployeeTable() {
           <td class="cell-actions">
             <button class="link-btn" data-view="${e.EmployeeID}">View</button>
             ${Can.editEmployees(CURRENT_USER.role) ? `<button class="link-btn" data-edit="${e.EmployeeID}">Edit</button>` : ''}
-            ${Can.deleteEmployees(CURRENT_USER.role) ? `<button class="link-btn link-danger" data-delete="${e.EmployeeID}">Delete</button>` : ''}
+            ${e.Status === 'Inactive'
+              ? (Can.editEmployees(CURRENT_USER.role) ? `<button class="link-btn" data-reactivate="${e.EmployeeID}">Reactivate</button>` : '')
+              : (Can.deleteEmployees(CURRENT_USER.role) ? `<button class="link-btn link-danger" data-delete="${e.EmployeeID}">Delete</button>` : '')}
           </td>
         </tr>`;
     }).join('');
@@ -332,6 +332,7 @@ function renderEmployeeTable() {
   tbody.querySelectorAll('.cell-name').forEach(el => el.addEventListener('click', () => openDetailPanel(el.dataset.emp)));
   tbody.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('click', () => openEmployeePanel(el.dataset.edit)));
   tbody.querySelectorAll('[data-delete]').forEach(el => el.addEventListener('click', () => handleDelete(el.dataset.delete)));
+  tbody.querySelectorAll('[data-reactivate]').forEach(el => el.addEventListener('click', () => handleReactivate(el.dataset.reactivate)));
   tbody.querySelectorAll('.row-checkbox').forEach(cb => {
     cb.addEventListener('change', (e) => {
       const id = e.target.dataset.id;
@@ -356,6 +357,14 @@ function renderBulkBar() {
   const count = SELECTED_IDS.size;
   bar.hidden = count === 0;
   document.getElementById('bulk-count').textContent = `${count} selected`;
+  if (count === 0) return;
+
+  const selectedRows = EMPLOYEES.filter(e => SELECTED_IDS.has(e.EmployeeID));
+  const hasInactive = selectedRows.some(e => e.Status === 'Inactive');
+  const hasActive = selectedRows.some(e => e.Status !== 'Inactive');
+
+  document.getElementById('bulk-reactivate-btn').hidden = !(hasInactive && Can.editEmployees(CURRENT_USER.role));
+  document.getElementById('bulk-delete-btn').hidden = !(hasActive && Can.deleteEmployees(CURRENT_USER.role));
 }
 
 function renderPagination(total, totalPages) {
@@ -409,6 +418,31 @@ async function handleDelete(employeeId) {
     await API.call('deleteEmployee', { employeeId });
     await loadEmployees();
     Toast.success('Employee marked inactive.');
+  } catch (err) {
+    Toast.error(err.message);
+  }
+}
+
+async function handleReactivate(employeeId) {
+  try {
+    await API.call('reactivateEmployee', { employeeId });
+    await loadEmployees();
+    Toast.success('Employee reactivated.');
+  } catch (err) {
+    Toast.error(err.message);
+  }
+}
+
+async function handleBulkReactivate() {
+  const ids = Array.from(SELECTED_IDS);
+  if (ids.length === 0) return;
+  try {
+    for (const id of ids) {
+      await API.call('reactivateEmployee', { employeeId: id });
+    }
+    SELECTED_IDS.clear();
+    await loadEmployees();
+    Toast.success(`${ids.length} employee${ids.length === 1 ? '' : 's'} reactivated.`);
   } catch (err) {
     Toast.error(err.message);
   }
