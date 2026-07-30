@@ -8,9 +8,9 @@ let ACTIVE_FILTERS = { branchId: '', clientId: '', status: '', search: '' };
 
 let SORT_STATE = { key: 'LastName', dir: 'asc' };
 let PAGE = 1;
-let PAGE_SIZE = 25;
+let PAGE_SIZE = 10;
 let SELECTED_IDS = new Set();
-let DENSITY = 'comfortable';
+let DENSITY = 'compact';
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Session.isLoggedIn()) {
