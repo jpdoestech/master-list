@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard · HRIS</title>
+<title>Employees · HRIS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="app-body">
@@ -35,12 +35,29 @@
     </div>
     <div id="branch-tree" class="branch-tree">
       <div class="tree-item active" data-branch="" data-client="">
-        <span class="tree-dot" style="--dot:#16233D"></span> All records
+        <span class="tree-dot" style="--dot:#4F46E5"></span> All records
       </div>
     </div>
   </aside>
 
   <main class="main">
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">Employees</h2>
+        <p class="page-subtitle" id="page-subtitle">Loading records…</p>
+      </div>
+      <button id="add-employee-btn" class="btn btn-primary" hidden>+ Add employee</button>
+    </div>
+
+    <div id="bulk-bar" class="bulk-bar" hidden>
+      <span id="bulk-count">0 selected</span>
+      <div class="bulk-bar-actions">
+        <button id="bulk-export-btn" class="btn btn-ghost btn-sm">Export CSV</button>
+        <button id="bulk-delete-btn" class="btn btn-danger btn-sm" hidden>Mark inactive</button>
+        <button id="bulk-clear-btn" class="btn btn-ghost btn-sm">Clear</button>
+      </div>
+    </div>
+
     <div class="main-toolbar">
       <div class="filter-group">
         <select id="status-filter">
@@ -50,26 +67,50 @@
         </select>
         <span id="scope-label" class="scope-label"></span>
       </div>
-      <button id="add-employee-btn" class="btn btn-primary" hidden>+ Add employee</button>
+      <div class="toolbar-actions">
+        <div class="segmented" id="density-toggle">
+          <button type="button" data-density="comfortable" class="active">Comfortable</button>
+          <button type="button" data-density="compact">Compact</button>
+        </div>
+        <button id="export-all-btn" class="btn btn-ghost">Export CSV</button>
+      </div>
     </div>
 
     <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Branch</th>
-            <th>Client</th>
-            <th>Position</th>
-            <th>Employment status</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="employee-rows">
-          <tr><td colspan="7" class="empty-state">Loading…</td></tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="data-table" id="employee-table">
+          <thead>
+            <tr>
+              <th class="th-checkbox"><input type="checkbox" id="select-all-checkbox"></th>
+              <th class="sortable" data-sort="LastName">Name <span class="sort-arrow">▲</span></th>
+              <th class="sortable" data-sort="BranchID">Branch <span class="sort-arrow">▲</span></th>
+              <th class="sortable" data-sort="ClientID">Client <span class="sort-arrow">▲</span></th>
+              <th class="sortable" data-sort="Position">Position <span class="sort-arrow">▲</span></th>
+              <th class="sortable" data-sort="EmploymentStatus">Employment status <span class="sort-arrow">▲</span></th>
+              <th class="sortable" data-sort="Status">Status <span class="sort-arrow">▲</span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="employee-rows">
+            <tr><td colspan="8" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-bar">
+        <div class="pagination-summary">
+          <span id="pagination-summary-text">—</span>
+          <label>
+            Rows per page
+            <select id="page-size-select">
+              <option value="10">10</option>
+              <option value="25" selected>25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+        </div>
+        <div class="pagination-controls" id="pagination-controls"></div>
+      </div>
     </div>
   </main>
 </div>
@@ -195,9 +236,12 @@
   </div>
 </div>
 
+<div id="toast-stack" class="toast-stack"></div>
+
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/rbac.js"></script>
+<script src="js/toast.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/employee.js"></script>
 </body>

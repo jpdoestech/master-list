@@ -42,7 +42,7 @@ const Can = {
 
 // A fixed color rotation so each branch reads consistently everywhere
 // (sidebar tree, table chips, employee panel) without needing per-branch config.
-const BRANCH_COLOR_ROTATION = ['#B8863A', '#2C6E68', '#5B6472', '#8A5A9E', '#3E6FA6', '#A6402F'];
+const BRANCH_COLOR_ROTATION = ['#4F46E5', '#0EA5A0', '#D97706', '#DB2777', '#2563EB', '#059669'];
 
 function branchColor(branchId) {
   let hash = 0;
