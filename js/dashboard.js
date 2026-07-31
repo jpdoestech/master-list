@@ -518,6 +518,14 @@ async function openDetailPanel(employeeId) {
     const client = CLIENTS.find(c => String(c.ClientID) === String(emp.ClientID));
 
     document.getElementById('detail-name').textContent = `${emp.FirstName} ${emp.LastName}`;
+
+    const homeAddress = [emp.Address, emp.HomeBarangayName, emp.HomeCityName, emp.HomeProvinceName, emp.HomeRegionName]
+      .filter(Boolean).join(', ');
+    const emergencyAddress = [emp.EmergencyStreet, emp.EmergencyBarangayName, emp.EmergencyCityName, emp.EmergencyProvinceName, emp.EmergencyRegionName]
+      .filter(Boolean).join(', ');
+    const birthPlace = [emp.PlaceOfBirth, emp.ProvinceOfBirthName, emp.RegionOfBirthName, emp.CountryOfBirth]
+      .filter(Boolean).join(', ');
+
     document.getElementById('detail-body').innerHTML = `
       <div class="detail-grid">
         <div><span class="detail-label">Branch</span><span class="chip" style="--chip-color:${branchColor(emp.BranchID)}">${escapeHtml(branch ? branch.BranchName : '—')}</span></div>
@@ -527,9 +535,18 @@ async function openDetailPanel(employeeId) {
         <div><span class="detail-label">Date hired</span>${escapeHtml(emp.DateHired || '—')}</div>
         <div><span class="detail-label">Mobile</span>${escapeHtml(emp.MobileNo || '—')}</div>
         <div><span class="detail-label">Email</span>${escapeHtml(emp.Email || '—')}</div>
-        <div><span class="detail-label">Address</span>${escapeHtml(emp.Address || '—')}</div>
+        <div><span class="detail-label">Civil status</span>${escapeHtml(emp.CivilStatus || '—')}</div>
+        <div><span class="detail-label">Blood type</span>${escapeHtml(emp.BloodType || '—')}</div>
+        <div><span class="detail-label">Date of birth</span>${escapeHtml(emp.DateOfBirth || '—')}</div>
+        <div style="grid-column:1/-1"><span class="detail-label">Home address</span>${escapeHtml(homeAddress || '—')}</div>
+        <div style="grid-column:1/-1"><span class="detail-label">Place of birth</span>${escapeHtml(birthPlace || '—')}</div>
         <div><span class="detail-label">TIN</span><span class="mono">${escapeHtml(emp.TIN || '—')}</span></div>
-        <div><span class="detail-label">SSS / GSIS</span><span class="mono">${escapeHtml(emp.SSSGSIS || '—')}</span></div>
+        <div><span class="detail-label">SSS</span><span class="mono">${escapeHtml(emp.SSSGSIS || '—')}</span></div>
+        <div><span class="detail-label">PhilHealth</span><span class="mono">${escapeHtml(emp.PhilHealthNo || '—')}</span></div>
+        <div><span class="detail-label">Pag-IBIG</span><span class="mono">${escapeHtml(emp.PagIbigNo || '—')}</span></div>
+        <div><span class="detail-label">Emergency contact</span>${escapeHtml(emp.EmergencyContactPerson || '—')}${emp.EmergencyRelationship ? ' (' + escapeHtml(emp.EmergencyRelationship) + ')' : ''}</div>
+        <div><span class="detail-label">Emergency contact no</span>${escapeHtml(emp.EmergencyContactNo || '—')}</div>
+        <div style="grid-column:1/-1"><span class="detail-label">Emergency address</span>${escapeHtml(emergencyAddress || '—')}</div>
       </div>`;
 
     const comments = await API.call('listComments', { employeeId });

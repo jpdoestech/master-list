@@ -119,63 +119,221 @@
 <!-- Slide-over: Employee create/edit -->
 <div id="employee-panel" class="slideover" hidden>
   <div class="slideover-backdrop" data-close-panel="employee-panel"></div>
-  <div class="slideover-card">
+  <div class="slideover-card slideover-card-wide">
     <div class="slideover-head">
       <h3 id="employee-panel-title">Add employee</h3>
       <button class="icon-btn" data-close-panel="employee-panel">×</button>
     </div>
-    <form id="employee-form" class="stacked-form">
+    <form id="employee-form" class="stacked-form" novalidate>
       <input type="hidden" id="emp-id">
 
+      <p class="form-section-title">Personal Information</p>
       <div class="form-row">
-        <div>
-          <label>Branch</label>
-          <select id="emp-branch" required></select>
-        </div>
-        <div>
-          <label>Client</label>
-          <select id="emp-client" required></select>
-        </div>
+        <div><label>Last name*</label><input id="emp-last" autocomplete="family-name"><div class="field-error" data-err="emp-last">This is required</div></div>
+        <div><label>First name*</label><input id="emp-first" autocomplete="given-name"><div class="field-error" data-err="emp-first">This is required</div></div>
+        <div><label>Middle name</label><input id="emp-middle" autocomplete="additional-name"></div>
       </div>
-
-      <div class="form-row">
-        <div><label>First name</label><input id="emp-first" required></div>
-        <div><label>Middle name</label><input id="emp-middle"></div>
-        <div><label>Last name</label><input id="emp-last" required></div>
-      </div>
-
       <div class="form-row">
         <div>
           <label>Gender</label>
-          <select id="emp-gender"><option></option><option>Male</option><option>Female</option></select>
+          <select id="emp-gender"><option value=""></option><option>Male</option><option>Female</option></select>
         </div>
-        <div>
-          <label>Civil status</label>
-          <select id="emp-civil"><option></option><option>Single</option><option>Married</option><option>Widowed</option><option>Separated</option></select>
-        </div>
-        <div><label>Date of birth</label><input type="date" id="emp-dob"></div>
       </div>
 
-      <label>Address</label>
-      <input id="emp-address">
-
+      <p class="form-section-title">Employment Information</p>
       <div class="form-row">
-        <div><label>Mobile no.</label><input id="emp-mobile"></div>
+        <div>
+          <label>Branch*</label>
+          <select id="emp-branch"></select>
+          <div class="field-error" data-err="emp-branch">Please select a branch</div>
+        </div>
+        <div>
+          <label>Client*</label>
+          <select id="emp-client"></select>
+          <div class="field-error" data-err="emp-client">Please select a client</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Position*</label>
+          <input id="emp-position" placeholder="e.g. Warehouse Associate">
+          <div class="field-error" data-err="emp-position">This is required</div>
+        </div>
+        <div>
+          <label>Date hired*</label>
+          <input type="date" id="emp-datehired">
+          <div class="field-error" data-err="emp-datehired">This is required and cannot be in the future</div>
+        </div>
+        <div>
+          <label>Employment status</label>
+          <select id="emp-empstatus"><option value=""></option><option>Regular</option><option>Probationary</option><option>Contractual</option><option>Project-based</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Contact number*</label>
+          <input type="tel" id="emp-mobile" maxlength="11" placeholder="09161234567">
+          <p class="field-hint">Must be 11 digits, e.g. 09161234567</p>
+          <div class="field-error" data-err="emp-mobile">Must be 11 digits, e.g. 09161234567</div>
+        </div>
         <div><label>Email</label><input type="email" id="emp-email"></div>
       </div>
 
+      <p class="form-section-title">Home Address</p>
+      <div>
+        <label>Street / Village*</label>
+        <input id="emp-home-street" placeholder="e.g. Narra St., Lower Village">
+        <p class="field-hint">Street / Village / Lot / Block / Purok only.</p>
+        <div class="field-error" data-err="emp-home-street">This is required</div>
+      </div>
       <div class="form-row">
-        <div><label>Position</label><input id="emp-position"></div>
-        <div><label>Date hired</label><input type="date" id="emp-datehired"></div>
         <div>
-          <label>Employment status</label>
-          <select id="emp-empstatus"><option></option><option>Regular</option><option>Probationary</option><option>Contractual</option><option>Project-based</option></select>
+          <label>Region*</label>
+          <select id="emp-home-region"><option value="">Loading regions&hellip;</option></select>
+          <div class="field-error" data-err="emp-home-region">Please select a region</div>
+        </div>
+        <div>
+          <label>Province*</label>
+          <select id="emp-home-province" disabled><option value="">Select region first</option></select>
+          <div class="field-error" data-err="emp-home-province">Please select a province</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>City / Municipality*</label>
+          <select id="emp-home-city" disabled><option value="">Select province first</option></select>
+          <div class="field-error" data-err="emp-home-city">Please select a city/municipality</div>
+        </div>
+        <div>
+          <label>Barangay*</label>
+          <select id="emp-home-barangay" disabled><option value="">Select city first</option></select>
+          <div class="field-error" data-err="emp-home-barangay">Please select a barangay</div>
         </div>
       </div>
 
+      <p class="form-section-title">Birth Information</p>
       <div class="form-row">
-        <div><label>TIN</label><input id="emp-tin"></div>
-        <div><label>SSS / GSIS</label><input id="emp-sss"></div>
+        <div>
+          <label>Date of birth*</label>
+          <input type="date" id="emp-dob">
+          <div class="field-error" data-err="emp-dob">This is required and cannot be in the future</div>
+        </div>
+        <div>
+          <label>Place of birth*</label>
+          <input id="emp-place-of-birth" placeholder="e.g. SPMC, Davao City">
+          <div class="field-error" data-err="emp-place-of-birth">This is required</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Region of birth*</label>
+          <select id="emp-birth-region"><option value="">Loading regions&hellip;</option></select>
+          <div class="field-error" data-err="emp-birth-region">Please select a region</div>
+        </div>
+        <div>
+          <label>Province of birth*</label>
+          <select id="emp-birth-province" disabled><option value="">Select region first</option></select>
+          <div class="field-error" data-err="emp-birth-province">Please select a province</div>
+        </div>
+        <div>
+          <label>Country of birth*</label>
+          <select id="emp-birth-country"></select>
+          <div class="field-error" data-err="emp-birth-country">Please select a country</div>
+        </div>
+      </div>
+
+      <p class="form-section-title">Health &amp; Civil Status</p>
+      <div class="form-row">
+        <div>
+          <label>Blood type*</label>
+          <select id="emp-blood-type"></select>
+          <div class="field-error" data-err="emp-blood-type">Please select a blood type</div>
+        </div>
+        <div>
+          <label>Civil status*</label>
+          <select id="emp-civil"></select>
+          <div class="field-error" data-err="emp-civil">Please select a civil status</div>
+        </div>
+      </div>
+
+      <p class="form-section-title">Government ID Numbers</p>
+      <div class="form-row">
+        <div>
+          <label>PhilHealth number*</label>
+          <input id="emp-philhealth" maxlength="12" placeholder="12 digits">
+          <div class="checkbox-line"><input type="checkbox" id="emp-no-philhealth"><label for="emp-no-philhealth">I don't have a PhilHealth number.</label></div>
+          <div class="field-error" data-err="emp-philhealth">Must be 12 digits</div>
+        </div>
+        <div>
+          <label>Pag-IBIG number*</label>
+          <input id="emp-pagibig" maxlength="12" placeholder="12 digits">
+          <div class="checkbox-line"><input type="checkbox" id="emp-no-pagibig"><label for="emp-no-pagibig">I don't have a Pag-IBIG number.</label></div>
+          <div class="field-error" data-err="emp-pagibig">Must be 12 digits</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>SSS number*</label>
+          <input id="emp-sss" maxlength="10" placeholder="10 digits">
+          <div class="checkbox-line"><input type="checkbox" id="emp-no-sss"><label for="emp-no-sss">I don't have an SSS number.</label></div>
+          <div class="field-error" data-err="emp-sss">Must be 10 digits</div>
+        </div>
+        <div>
+          <label>TIN*</label>
+          <input id="emp-tin" maxlength="9" placeholder="9 digits">
+          <div class="checkbox-line"><input type="checkbox" id="emp-no-tin"><label for="emp-no-tin">I don't have a TIN.</label></div>
+          <div class="field-error" data-err="emp-tin">Must be 9 digits</div>
+        </div>
+      </div>
+
+      <p class="form-section-title">In Case of Emergency</p>
+      <div class="form-row">
+        <div>
+          <label>Contact person*</label>
+          <input id="emp-emergency-person">
+          <div class="field-error" data-err="emp-emergency-person">This is required</div>
+        </div>
+        <div>
+          <label>Relationship*</label>
+          <select id="emp-emergency-relationship"></select>
+          <div class="field-error" data-err="emp-emergency-relationship">Please select a relationship</div>
+        </div>
+      </div>
+      <div>
+        <label>Emergency contact no*</label>
+        <input type="tel" id="emp-emergency-mobile" maxlength="11" placeholder="09161234567">
+        <div class="field-error" data-err="emp-emergency-mobile">Must be 11 digits, e.g. 09161234567</div>
+      </div>
+
+      <p class="form-section-sub">Contact person address — same structure as Home Address.</p>
+      <div>
+        <label>Street / Village*</label>
+        <input id="emp-emergency-street" placeholder="e.g. Narra St., Lower Village">
+        <div class="field-error" data-err="emp-emergency-street">This is required</div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Region*</label>
+          <select id="emp-emergency-region"><option value="">Loading regions&hellip;</option></select>
+          <div class="field-error" data-err="emp-emergency-region">Please select a region</div>
+        </div>
+        <div>
+          <label>Province*</label>
+          <select id="emp-emergency-province" disabled><option value="">Select region first</option></select>
+          <div class="field-error" data-err="emp-emergency-province">Please select a province</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>City / Municipality*</label>
+          <select id="emp-emergency-city" disabled><option value="">Select province first</option></select>
+          <div class="field-error" data-err="emp-emergency-city">Please select a city/municipality</div>
+        </div>
+        <div>
+          <label>Barangay*</label>
+          <select id="emp-emergency-barangay" disabled><option value="">Select city first</option></select>
+          <div class="field-error" data-err="emp-emergency-barangay">Please select a barangay</div>
+        </div>
       </div>
 
       <p id="employee-form-error" class="form-error" hidden></p>
@@ -185,6 +343,7 @@
         <button type="submit" id="employee-form-submit" class="btn btn-primary">Save employee</button>
       </div>
     </form>
+  </div>
   </div>
 </div>
 
